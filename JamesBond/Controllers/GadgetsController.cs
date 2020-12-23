@@ -54,6 +54,29 @@ namespace JamesBond.Controllers
             gadgetDAO.Update(updateModel);
             return View("Details", updateModel);
         }
-
+        public IActionResult Delete(int id)
+        {
+            GadgetDAO gadgetDao = new GadgetDAO();
+            gadgetDao.Delete(id);
+            return Redirect("/gadgets");
+        }
+        public IActionResult SearchForm()
+        {
+            return View("SearchForm");
+        }
+        public IActionResult SearchName(string Name)
+        {
+            List<GadgetModel> gadgets = new List<GadgetModel>();
+            GadgetDAO gadgetDAO = new GadgetDAO();
+            gadgets = gadgetDAO.SearchName(Name);
+            return View("Index", gadgets);
+        }
+        public IActionResult SearchDescription(string Description)
+        {
+            List<GadgetModel> gadgets = new List<GadgetModel>();
+            GadgetDAO gadgetDAO = new GadgetDAO();
+            gadgets = gadgetDAO.SearchDescription(Description);
+            return View("Index", gadgets);
+        }
     }
 }

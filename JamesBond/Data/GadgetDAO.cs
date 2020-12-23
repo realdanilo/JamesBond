@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Threading.Tasks;
 
 namespace JamesBond.Data
 {
@@ -96,7 +97,7 @@ namespace JamesBond.Data
                string SqlQuery = "UPDATE [dbo].[GADGETS] SET Name=@Name, Description=@Description, AppearsIn = @AppearsIn,WithThisActor=@WithThisActor Where id = @Id";
                SqlCommand command = new SqlCommand(SqlQuery, connection);
 
-               command.Parameters.Add("@Id", System.Data.SqlDbType.VarChar, 1000).Value = updateModel.Id;
+               command.Parameters.Add("@Id", System.Data.SqlDbType.Int).Value = updateModel.Id;
                 command.Parameters.Add("@Name", System.Data.SqlDbType.VarChar, 1000).Value = updateModel.Name;
                 command.Parameters.Add("@Description", System.Data.SqlDbType.VarChar, 1000).Value = updateModel.Description;
                 command.Parameters.Add("@AppearsIn", System.Data.SqlDbType.VarChar, 1000).Value = updateModel.AppearsIn;
@@ -106,5 +107,84 @@ namespace JamesBond.Data
             }
             return -1;
         }
+        public int Delete(int id)
+        {
+            using(SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string SqlQuery = "DELETE FROM [dbo].[GADGETS] Where ID = @Id";
+                SqlCommand command = new SqlCommand(SqlQuery, connection);
+                command.Parameters.Add("@Id", System.Data.SqlDbType.Int).Value = id;
+                connection.Open();
+                //deleted Id
+                return command.ExecuteNonQuery();
+            }
+        }
+        public List<GadgetModel> SearchName(string Name)
+        {
+            List<GadgetModel> gadgets = new List<GadgetModel>();
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string sqlQuery = $"SELECT * FROM  [dbo].[GADGETS] where Name LIKE @Search";
+                SqlCommand command = new SqlCommand(sqlQuery, connection);
+                command.Parameters.Add("@Search", System.Data.SqlDbType.VarChar, 1000).Value = $"%{Name}%";
+
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        //create new Gadget Object and add to the list
+                        GadgetModel gadget = new GadgetModel();
+                        gadget.Id = reader.GetInt32(0);
+                        gadget.Name = reader.GetString(1);
+                        gadget.Description = reader.GetString(2);
+                        gadget.AppearsIn = reader.GetString(3);
+                        gadget.WithThisActor = reader.GetString(4);
+
+                        gadgets.Add(gadget);
+
+                    }
+                }
+
+            }
+
+            return gadgets;
+        }
+        public List<GadgetModel> SearchDescription(string Description)
+        {
+            List<GadgetModel> gadgets = new List<GadgetModel>();
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string sqlQuery = $"SELECT * FROM  [dbo].[GADGETS] where Description LIKE @Description";
+                SqlCommand command = new SqlCommand(sqlQuery, connection);
+                command.Parameters.Add("@Description", System.Data.SqlDbType.VarChar, 1000).Value = $"%{Description}%";
+
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        //create new Gadget Object and add to the list
+                        GadgetModel gadget = new GadgetModel();
+                        gadget.Id = reader.GetInt32(0);
+                        gadget.Name = reader.GetString(1);
+                        gadget.Description = reader.GetString(2);
+                        gadget.AppearsIn = reader.GetString(3);
+                        gadget.WithThisActor = reader.GetString(4);
+
+                        gadgets.Add(gadget);
+
+                    }
+                }
+
+            }
+
+            return gadgets;
+        }
+
     }
 }
